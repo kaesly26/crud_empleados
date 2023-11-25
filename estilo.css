@@ -1,0 +1,30 @@
+
+table{
+    
+    width: 1100px;
+    height: auto;
+    border: 2px;
+}
+
+table tr {
+  width: 500px;
+  height: 80px;
+	background-color: rgb(50, 190, 214);
+}
+table td {
+  background-color: rgb(175, 239, 250);
+  text-align: center;
+}
+
+.btn{
+    width: 100px;
+    height: 40px;
+    background: rgb(133, 225, 248);
+    
+}
+.btnd {
+  width: 100px;
+  height: 40px;
+  background: rgb(255, 52, 52);
+
+}
