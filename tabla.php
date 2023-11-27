@@ -1,7 +1,7 @@
 
 <?php 
   include ("conexion/conexion.php");
- $sql=$conexion->prepare("SELECT * FROM empresa2.empleados");
+ $sql=$conexion->prepare("SELECT * FROM empresa.empleados");
  $sql->execute(); 
 
 
@@ -27,7 +27,6 @@
         <th>Correo </th>
         <th>Foto</th>
         <th>identificación </th>
-        <th></th>
         <th></th>
         </tr>
        <tbody>

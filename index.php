@@ -1,10 +1,13 @@
-<?php
+ <?php
 include ("conexion/conexion.php");
 $id=(isset( $_POST['id']))? $_POST['id']:"";
 $nombre=(isset( $_POST['nombre']))?$_POST['nombre']:"";
 $apellidoPaterno= (isset($_POST['apellido_p']))?$_POST['apellido_p']:"";
 $apellidoMaterno= (isset( $_POST['apellido_m']))? $_POST['apellido_m']:"";
 $correo= (isset($_POST['correo']))?$_POST['correo']:"";
+$foto=(isset($_FILES['foto']['name']))?$_FILES['foto']['name']:"";
+$date= new DateTime();
+$nombreArchivo= ($foto != "") ? $date->getTimestamp() ."_". $_FILES["foto"]["name"] : "imagen.jpg";
 
 $accion=(isset($_POST['action']))?$_POST['action']:"";
 
@@ -13,13 +16,9 @@ switch($accion){
        
         try {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $date= new DateTime();
-                $foto=(isset($_FILES['foto']['name']))?$_FILES['foto']['name']:"";
-                $nombreArchivo= ($foto != "") ? $date->getTimestamp() ."_". $_FILES["foto"]["name"] : "imagen.jpg";
                 $tmp_name = $_FILES["foto"]['tmp_name'];
-                echo "la ruta".$nombreArchivo;
                 if($tmp_name != ""){
-                    move_uploaded_file($tmp_name,"./img/". $nombreArchivo);
+                 move_uploaded_file($tmp_name,"./img/". $nombreArchivo);
                 }
             }else{
                 echo"la imagen no se guardo";
@@ -56,9 +55,26 @@ switch($accion){
 
     case 'modificar':
         try {
-
+            $tmp_name = $_FILES["foto"]['tmp_name'];
+            if($tmp_name != ""){
+             move_uploaded_file($tmp_name,"./img/". $nombreArchivo);
+            $sql=$conexion->prepare("SELECT Foto FROM empleados WHERE identificacion= ?");   
+            $sql->execute([$id]);
+            $eliminarfoto=$sql->fetch(PDO::FETCH_LAZY);
+        
+            if(isset($eliminarfoto["foto"])){
+                if(file_exists("img/".$eliminarfoto["foto"])){
+                    if($item['foto']!="imagen.jpg"){
+                        unlink("img/".$eliminarfoto["foto"]);
+                        echo "se borro";
+                    }
+                }
+                
+            }
+            }
+            
             $smtp=$conexion->prepare("UPDATE empleados SET Nombres=?,Apellido_paterno=?,Apellido_materno=?, Correo=?, Foto=? WHERE identificacion= ?");
-            $smtp->execute([$nombre,$apellidoPaterno,$apellidoMaterno,$correo,$foto,$id]);
+            $smtp->execute([$nombre,$apellidoPaterno,$apellidoMaterno,$correo,$nombreArchivo,$id]);
             /*
             $conexion="UPDATE empleados set Nombres='$nombre',Apellido_paterno='$apellidoPaterno',Apellido_materno='$apellidoMaterno', Correo='$correo', Foto='$foto' where identificacion='$id'";
             echo "<center>";
@@ -126,7 +142,7 @@ $sql->execute();
             <p>Apellido paterno: </p><input type="text" name="apellido_p" id="apellido_p" value= "<?php echo $apellidoPaterno ?>" placeholder="" requiere=""/>
             <p>Apellido materno: </p><input type="text" name="apellido_m" id="apellido_m"  value= "<?php echo $apellidoMaterno ?>" placeholder="" requiere=""/>
             <p>Correo: </p><input type="text" name="correo" id="correo"  value= "<?php echo $correo ?>" placeholder="" requiere="" />
-            <p>Foto: </p><input type="file" name="foto" id="foto" accept="image/*" value= "<?php echo $foto ?>" multiple/>
+            <p>Foto: </p><input type="file" name="foto" id="foto" accept="image/*" value= "<?php echo $nombreArchivo ?>" multiple/>
             <br><br>
             <button type="submit" name= "action" value="guardar" class="btn btn-info">Guardar</button>
             <button type="submit" name= "action" value="modificar" class="btn btn-info ">Modificar</button>
